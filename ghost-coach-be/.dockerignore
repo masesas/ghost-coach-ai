@@ -1,0 +1,25 @@
+# Build outputs
+.gradle/
+build/
+out/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Local env & uploads
+.env
+uploads/
+test-uploads/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+
+# Docs (not needed in image)
+*.md
