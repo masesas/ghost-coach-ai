@@ -1,0 +1,44 @@
+name: ghost-coach
+services:
+  gc-postgres:
+    image: postgres:16-alpine
+    container_name: gc-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ghostcoach}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "6432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  gc-backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gc-backend
+    depends_on:
+      gc-postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+      - "5005:5005"       # JDWP debug port
+    env_file:
+      - ../.env
+    environment:
+      # Override host-only values from .env so the container talks to the postgres service.
+      DB_URL: jdbc:postgresql://gc-postgres:5432/ghostcoach
+      UPLOAD_DIR: /app/uploads
+      DEBUG_ENABLED: "false"
+    volumes:
+      - uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:

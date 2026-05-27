@@ -1,0 +1,22 @@
+FROM eclipse-temurin:21-jdk-jammy
+
+RUN apt-get update && apt-get install -y --no-install-recommends procps \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY gradle gradle
+RUN ./gradlew --no-daemon dependencies > /dev/null 2>&1 || true
+
+EXPOSE 8080 5005
+
+ENV DEBUG_ENABLED="true" \
+    DEBUG_PORT="5005" \
+    DEBUG_SUSPEND="n" \
+    GRADLE_OPTS="-Dorg.gradle.daemon=true"
+
+COPY docker/docker-entrypoint-dev.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
