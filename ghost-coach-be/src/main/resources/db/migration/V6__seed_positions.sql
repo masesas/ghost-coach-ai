@@ -1,0 +1,17 @@
+INSERT INTO system_var (group_code, item_key, label, sort_order) VALUES
+('POSITION_CRICKET',    'BATSMAN',        'Batsman',        1),
+('POSITION_CRICKET',    'BOWLER',         'Bowler',         2),
+('POSITION_CRICKET',    'ALL_ROUNDER',    'All-rounder',    3),
+('POSITION_CRICKET',    'WICKET_KEEPER',  'Wicketkeeper',   4),
+('POSITION_FOOTBALL',   'GOALKEEPER',     'Goalkeeper',     1),
+('POSITION_FOOTBALL',   'DEFENDER',       'Defender',       2),
+('POSITION_FOOTBALL',   'MIDFIELDER',     'Midfielder',     3),
+('POSITION_FOOTBALL',   'FORWARD',        'Forward',        4),
+('POSITION_BASKETBALL', 'POINT_GUARD',    'Point Guard',    1),
+('POSITION_BASKETBALL', 'SHOOTING_GUARD', 'Shooting Guard', 2),
+('POSITION_BASKETBALL', 'SMALL_FORWARD',  'Small Forward',  3),
+('POSITION_BASKETBALL', 'POWER_FORWARD',  'Power Forward',  4),
+('POSITION_BASKETBALL', 'CENTER',         'Center',         5),
+('POSITION_BADMINTON',  'SINGLES',        'Singles',        1),
+('POSITION_BADMINTON',  'DOUBLES_LEFT',   'Doubles Left',   2),
+('POSITION_BADMINTON',  'DOUBLES_RIGHT',  'Doubles Right',  3);
