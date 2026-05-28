@@ -1,0 +1,54 @@
+# Usage (run from project root):
+#   docker compose --env-file .env \
+#     -f docker/docker-compose.yml \
+#     -f docker/docker-compose.debug.yml up --build
+#
+# What this override does:
+#   - Switches the `app` service to Dockerfile.dev (JDK image with Gradle).
+#   - Bind-mounts your local source into the container.
+#   - Runs `./gradlew -t classes` (continuous compile) + `./gradlew bootRun`
+#     so Spring DevTools restarts the context on every code change (~1-2s).
+#   - Exposes JDWP on port 5005 for IDE debugger attach.
+#
+# Notes:
+#   - `.env` is loaded via the base file's `env_file: ../.env`. It is repeated
+#     here so this override is self-contained and obvious to a reader.
+#   - Port 5005 + 8080 are already mapped by the base file; we don't redeclare
+#     them here.
+#
+# Hot-reload workflow:
+#   1. Edit any file under src/main/** on your host.
+#   2. Gradle continuous build recompiles → updates build/classes/...
+#   3. DevTools detects the change → restarts the Spring context in-place.
+#   4. Logs show: "Restarting due to N classes" — debugger stays attached.
+
+name: ghost-coach
+services:
+  gc-backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    env_file:
+      - ../.env
+    environment:
+      # Overrides on top of values from ../.env and the base compose file.
+      DEBUG_ENABLED: "true"
+      DEBUG_SUSPEND: "n"
+      DEBUG_PORT: "5005"
+      SPRING_PROFILES_ACTIVE: dev
+      UPLOAD_DIR: /workspace/uploads
+      # DevTools tweaks (optional)
+      SPRING_DEVTOOLS_RESTART_POLL_INTERVAL: "1s"
+      SPRING_DEVTOOLS_RESTART_QUIET_PERIOD: "400ms"
+    volumes:
+      # Source code — edited on host, picked up by continuous build
+      - ../src:/workspace/src:delegated
+      # Build outputs stay inside the container, but cache them for restart speed
+      - gradle-cache:/root/.gradle
+      - build-output:/workspace/build
+      # Override the production `uploads` volume to a path that exists in the dev image
+      - ../uploads:/workspace/uploads
+
+volumes:
+  gradle-cache:
+  build-output:
