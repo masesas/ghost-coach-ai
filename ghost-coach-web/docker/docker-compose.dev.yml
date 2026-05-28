@@ -1,0 +1,54 @@
+# Standalone development compose — Vite dev server with hot module replacement (HMR).
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up --build
+#
+# Backend should already be running in ../ghost-coach-be so this service can use
+# the shared Docker network `ghost-coach_default` and proxy /api → gc-backend:8080.
+# Note: the network name comes from `name: ghost-coach` in the backend compose file,
+# not the folder name — both compose projects share the same project name.
+name: ghost-coach
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: gc-web-dev
+    ports:
+      - "5173:5173"
+    environment:
+      # Where Vite proxies /api requests from within the container.
+      VITE_API_PROXY_TARGET: "http://gc-backend:8080"
+      # HMR config — browser connects from host so it must use localhost:5173.
+      VITE_HMR_HOST: "localhost"
+      VITE_HMR_PORT: "5173"
+      VITE_HMR_CLIENT_PORT: "5173"
+      # On macOS / Windows bind mounts sometimes need polling. Set to "true" if
+      # file changes don't trigger reload.
+      CHOKIDAR_USEPOLLING: "false"
+    volumes:
+      # Source code — edited on host, picked up by Vite watcher
+      - ../src:/workspace/src:delegated
+      - ../public:/workspace/public:delegated
+      - ../index.html:/workspace/index.html:delegated
+      - ../vite.config.ts:/workspace/vite.config.ts:delegated
+      - ../tsconfig.json:/workspace/tsconfig.json:delegated
+      - ../tsconfig.node.json:/workspace/tsconfig.node.json:delegated
+      - ../tailwind.config.ts:/workspace/tailwind.config.ts:delegated
+      - ../postcss.config.js:/workspace/postcss.config.js:delegated
+      # Keep node_modules in the container (don't shadow with host).
+      # Use a named volume so the Linux/musl node_modules built inside the
+      # image isn't overwritten by host's macOS/darwin binaries — Rollup &
+      # esbuild ship platform-specific native binaries via optional deps.
+      - node_modules:/workspace/node_modules
+    networks:
+      - ghost-coach
+    restart: unless-stopped
+
+volumes:
+  node_modules:
+
+networks:
+  ghost-coach:
+    external: true
+    name: ghost-coach_default
