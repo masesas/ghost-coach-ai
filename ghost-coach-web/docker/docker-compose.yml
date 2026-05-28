@@ -1,0 +1,27 @@
+# Production-like compose for ghost-coach-web (nginx serving built SPA).
+#
+# Backend reachable via the shared external network `ghost-coach`.
+# Make sure backend stack is up first:
+#   cd ../ghost-coach-be && docker compose up -d
+#
+# Then start the web:
+#   docker compose up --build
+name: ghost-coach
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: gc-web
+    ports:
+      - "5173:80"
+    networks:
+      - default
+      - ghost-coach
+    restart: unless-stopped
+
+networks:
+  default:
+  ghost-coach:
+    external: true
+    name: ghost-coach-be_default
