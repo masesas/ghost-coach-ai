@@ -1,0 +1,66 @@
+name: ghost_coach
+description: "Ghost Coach — AI-powered sports coaching"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.5
+
+  # DI
+  get_it: ^9.2.1
+
+  # Routing
+  go_router: ^17.1.0
+
+  # Network
+  dio: ^5.9.2
+  chucker_flutter: ^1.9.1
+
+  # Storage
+  shared_preferences: ^2.5.4
+
+  # Media
+  image_picker: ^1.2.1
+  cached_network_image: ^3.4.1
+
+  # Permissions / native
+  permission_handler: ^12.0.1
+
+  # UI helpers
+  fluttertoast: ^9.0.0
+  fl_chart: ^0.69.0
+  cupertino_icons: ^1.0.8
+
+  # Logging
+  logger: ^2.3.0
+
+  # Utilities
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code generation
+  build_runner: ^2.13.1
+  go_router_builder: ^4.2.0
+
+  # Branding generators
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
+
+flutter:
+  uses-material-design: true
+  generate: false
+  assets:
+    - assets/icons/
+    - assets/images/
